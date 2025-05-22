@@ -1,0 +1,235 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Axum AI</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        /* Custom scrollbar */
+        ::-webkit-scrollbar {
+            width: 6px;
+        }
+        ::-webkit-scrollbar-track {
+            background: #1a1a1a;
+        }
+        ::-webkit-scrollbar-thumb {
+            background: #8b5cf6;
+            border-radius: 3px;
+        }
+        
+        /* Chat bubble animation */
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+        
+        .chat-message {
+            animation: fadeIn 0.3s ease-out;
+        }
+        
+        /* Input glow effect */
+        .input-glow:focus {
+            box-shadow: 0 0 0 2px rgba(139, 92, 246, 0.5);
+        }
+        
+        /* Pulse animation for thinking indicator */
+        @keyframes pulse {
+            0%, 100% { opacity: 1; }
+            50% { opacity: 0.5; }
+        }
+        
+        .pulse {
+            animation: pulse 1.5s infinite;
+        }
+        
+        /* Center the chat container */
+        .chat-container {
+            max-width: 800px;
+            margin: 0 auto;
+        }
+    </style>
+</head>
+<body class="bg-black text-gray-100 h-screen flex flex-col">
+    <!-- Main content -->
+    <main class="flex-1 overflow-hidden flex flex-col">
+        <!-- Chat header -->
+        <header class="border-b border-gray-800 p-4 flex items-center justify-center">
+            <div class="flex items-center space-x-2">
+                <div class="w-8 h-8 rounded-full bg-purple-600 flex items-center justify-center">
+                    <i class="fas fa-robot text-white"></i>
+                </div>
+                <h1 class="font-bold">DarkGPT</h1>
+            </div>
+        </header>
+        
+        <!-- Chat messages -->
+        <div id="chatContainer" class="flex-1 overflow-y-auto p-4 space-y-6 chat-container">
+            <div class="chat-message">
+                <div class="flex items-start space-x-4">
+                    <div class="w-8 h-8 rounded-full bg-purple-600 flex items-center justify-center flex-shrink-0">
+                        <i class="fas fa-robot text-white"></i>
+                    </div>
+                    <div class="flex-1">
+                        <p class="font-bold">DarkGPT</p>
+                        <div class="mt-1 text-gray-300">
+                            <p>Hello! I'm DarkGPT, your AI assistant with a sleek dark interface and purple accents. How can I help you today?</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="chat-message">
+                <div class="flex items-start space-x-4">
+                    <div class="w-8 h-8 rounded-full bg-gray-700 flex items-center justify-center flex-shrink-0">
+                        <i class="fas fa-user text-gray-300"></i>
+                    </div>
+                    <div class="flex-1">
+                        <p class="font-bold">You</p>
+                        <div class="mt-1 text-gray-300">
+                            <p>Can you tell me about this dark theme?</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="chat-message">
+                <div class="flex items-start space-x-4">
+                    <div class="w-8 h-8 rounded-full bg-purple-600 flex items-center justify-center flex-shrink-0">
+                        <i class="fas fa-robot text-white"></i>
+                    </div>
+                    <div class="flex-1">
+                        <p class="font-bold">DarkGPT</p>
+                        <div class="mt-1 text-gray-300">
+                            <p>Of course! This interface features:</p>
+                            <ul class="list-disc pl-5 mt-2 space-y-1">
+                                <li>A deep black background for reduced eye strain</li>
+                                <li>Vibrant purple accents (#8b5cf6) for visual hierarchy</li>
+                                <li>Smooth animations and transitions</li>
+                                <li>Responsive design that works on all devices</li>
+                                <li>Custom scrollbars and interactive elements</li>
+                            </ul>
+                            <p class="mt-2">Would you like me to generate some code for a similar theme?</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Thinking indicator (hidden by default) -->
+        <div id="thinkingIndicator" class="hidden px-4 py-2 bg-gray-900 border-t border-gray-800">
+            <div class="flex items-center justify-center space-x-2 text-purple-400">
+                <div class="w-2 h-2 rounded-full bg-purple-500 pulse"></div>
+                <div class="w-2 h-2 rounded-full bg-purple-500 pulse" style="animation-delay: 0.2s"></div>
+                <div class="w-2 h-2 rounded-full bg-purple-500 pulse" style="animation-delay: 0.4s"></div>
+                <span class="ml-2">DarkGPT is thinking...</span>
+            </div>
+        </div>
+        
+        <!-- Input area -->
+        <div class="border-t border-gray-800 p-4 bg-gray-900">
+            <form id="chatForm" class="flex items-end space-x-2 chat-container mx-auto">
+                <div class="flex-1 relative">
+                    <textarea 
+                        id="messageInput"
+                        rows="1"
+                        placeholder="Message DarkGPT..."
+                        class="w-full bg-gray-800 text-gray-100 rounded-lg px-4 py-3 pr-10 resize-none input-glow focus:outline-none focus:ring-1 focus:ring-purple-500"
+                        style="max-height: 200px;"
+                    ></textarea>
+                </div>
+                <button 
+                    type="submit"
+                    class="w-10 h-10 rounded-lg bg-purple-600 text-white flex items-center justify-center hover:bg-purple-700 transition-colors"
+                >
+                    <i class="fas fa-paper-plane"></i>
+                </button>
+            </form>
+            <p class="text-xs text-gray-500 mt-2 text-center">
+                DarkGPT can make mistakes. Consider checking important information.
+            </p>
+        </div>
+    </main>
+
+    <script>
+        // Auto-resize textarea
+        const textarea = document.getElementById('messageInput');
+        textarea.addEventListener('input', function() {
+            this.style.height = 'auto';
+            this.style.height = (this.scrollHeight) + 'px';
+        });
+        
+        // Chat form submission
+        const chatForm = document.getElementById('chatForm');
+        const chatContainer = document.getElementById('chatContainer');
+        const thinkingIndicator = document.getElementById('thinkingIndicator');
+        
+        chatForm.addEventListener('submit', function(e) {
+            e.preventDefault();
+            const message = textarea.value.trim();
+            if (!message) return;
+            
+            // Add user message
+            addMessage('You', message, 'user');
+            textarea.value = '';
+            textarea.style.height = 'auto';
+            
+            // Show thinking indicator
+            thinkingIndicator.classList.remove('hidden');
+            
+            // Scroll to bottom
+            chatContainer.scrollTop = chatContainer.scrollHeight;
+            
+            // Simulate AI response after a delay
+            setTimeout(() => {
+                thinkingIndicator.classList.add('hidden');
+                
+                // Sample responses
+                const responses = [
+                    "I understand your question about the dark theme. The black background with purple accents creates a modern, sleek interface that's easy on the eyes, especially in low-light conditions.",
+                    "The purple color (#8b5cf6) is used strategically for interactive elements and highlights, creating visual interest while maintaining readability.",
+                    "Would you like me to explain any specific aspect of this theme in more detail? Perhaps the color psychology behind the purple accents or the technical implementation?",
+                    "This dark theme is not just about aesthetics - it's designed to reduce eye strain during prolonged use while maintaining high contrast for readability.",
+                    "I can generate code snippets for similar themes if you're interested in implementing this look in your own projects."
+                ];
+                
+                const randomResponse = responses[Math.floor(Math.random() * responses.length)];
+                addMessage('DarkGPT', randomResponse, 'ai');
+                
+                // Scroll to bottom after response
+                setTimeout(() => {
+                    chatContainer.scrollTop = chatContainer.scrollHeight;
+                }, 100);
+            }, 1500 + Math.random() * 2000);
+        });
+        
+        function addMessage(sender, text, type) {
+            const messageDiv = document.createElement('div');
+            messageDiv.className = 'chat-message';
+            
+            const icon = type === 'ai' 
+                ? '<i class="fas fa-robot text-white"></i>' 
+                : '<i class="fas fa-user text-gray-300"></i>';
+            
+            const bgColor = type === 'ai' ? 'bg-purple-600' : 'bg-gray-700';
+            
+            messageDiv.innerHTML = `
+                <div class="flex items-start space-x-4">
+                    <div class="w-8 h-8 rounded-full ${bgColor} flex items-center justify-center flex-shrink-0">
+                        ${icon}
+                    </div>
+                    <div class="flex-1">
+                        <p class="font-bold">${sender}</p>
+                        <div class="mt-1 text-gray-300">
+                            <p>${text}</p>
+                        </div>
+                    </div>
+                </div>
+            `;
+            
+            chatContainer.appendChild(messageDiv);
+        }
+    </script>
+</body>
+</html>
