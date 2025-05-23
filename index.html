@@ -37,28 +37,22 @@
     }
     .pulse { animation: pulse 1.5s infinite; }
 
-    /* Ancho máximo centrado */
+    /* Centrar ancho */
     .chat-container { max-width: 800px; margin: 0 auto; }
 
-    /* Transiciones suaves */
+    /* Transición solo de transform para un slide suave */
     #inputArea {
       transition: transform 0.6s cubic-bezier(0.22,1,0.36,1);
-    }
-    #logoArea {
-      transition: top 0.6s cubic-bezier(0.22,1,0.36,1);
     }
   </style>
 </head>
 <body class="bg-black text-gray-100 h-screen flex flex-col">
-  <!-- Logo animable: inicialmente justo encima del input -->
-  <header
-    id="logoArea"
-    class="absolute left-0 right-0 z-10 flex items-center justify-center chat-container p-4 bg-black"
-    style="top: calc(50% - 6rem);"
-  >
+  <!-- Header -->
+  <header class="border-b border-gray-800 p-4 flex items-center justify-center">
     <img src="axum-label-white.png" alt="Axum Logo" class="h-8 w-auto rounded-full"/>
   </header>
 
+  <!-- Main -->
   <main class="flex-1 relative">
     <!-- Mensajes -->
     <div
@@ -79,10 +73,12 @@
       </div>
     </div>
 
-    <!-- Input animable: inicialmente centrado -->
+    <!-- Input (inicia centrado, luego baja con animación suave de transform) -->
     <div
       id="inputArea"
-      class="absolute left-0 right-0 top-1/2 transform -translate-y-1/2 z-10 chat-container mx-auto border-t border-gray-800 p-4 bg-black"
+      class="absolute left-0 right-0 top-1/2 transform -translate-y-1/2
+             z-10 chat-container mx-auto
+             border-t border-gray-800 p-4 bg-black"
     >
       <form id="chatForm" class="flex items-center space-x-2">
         <div class="flex-1 relative">
@@ -113,42 +109,40 @@
     const chatContainer     = document.getElementById("chatContainer");
     const thinkingIndicator = document.getElementById("thinkingIndicator");
     const inputArea         = document.getElementById("inputArea");
-    const logoArea          = document.getElementById("logoArea");
     let firstMessageSent    = false;
 
     // Auto-resize del textarea
-    textarea.addEventListener("input", () => {
-      textarea.style.height = "auto";
-      textarea.style.height = textarea.scrollHeight + "px";
+    textarea.addEventListener("input", function () {
+      this.style.height = "auto";
+      this.style.height = this.scrollHeight + "px";
     });
 
-    chatForm.addEventListener("submit", function(e) {
+    chatForm.addEventListener("submit", function (e) {
       e.preventDefault();
       const message = textarea.value.trim();
       if (!message) return;
 
-      // Primero añadimos el mensaje y hacemos scroll
-      addMessage("You", message, "user");
-      textarea.value = "";
-      textarea.style.height = "auto";
-      chatContainer.scrollTo({ top: chatContainer.scrollHeight, behavior: "smooth" });
-
-      // Luego animamos logo e input
+      // Al primer mensaje, posicionamos abajo y animamos solo transform
       if (!firstMessageSent) {
+        // Reemplazamos la clase top-1/2 por bottom-0
+        inputArea.classList.replace("top-1/2", "bottom-0");
+        // Esperamos al próximo frame para quitar la traslación y disparar la animación
         requestAnimationFrame(() => {
-          // Mover input hacia abajo
-          inputArea.classList.replace("top-1/2", "bottom-0");
           inputArea.classList.remove("-translate-y-1/2");
-          // Mover logo hacia arriba
-          logoArea.style.top = "0";
         });
         firstMessageSent = true;
       }
 
-      // Mostrar indicador “pensando”
-      thinkingIndicator.classList.remove("hidden");
+      // Añadimos mensaje de usuario
+      addMessage("You", message, "user");
+      textarea.value = "";
+      textarea.style.height = "auto";
 
-      // Simular respuesta de Axum
+      // Mostrar “pensando” y scroll suave
+      thinkingIndicator.classList.remove("hidden");
+      chatContainer.scrollTo({ top: chatContainer.scrollHeight, behavior: "smooth" });
+
+      // Simulamos respuesta de Axum
       setTimeout(() => {
         thinkingIndicator.classList.add("hidden");
         const samples = [
@@ -163,13 +157,16 @@
     });
 
     function addMessage(sender, text, type) {
-      const avatar = type === "ai"
-        ? `<div class="w-8 h-8 rounded-full overflow-hidden flex-shrink-0">
-             <img src="axum-white.png" alt="Axum Logo" class="w-full h-full object-cover">
-           </div>`
-        : `<div class="w-8 h-8 rounded-full bg-gray-700 flex items-center justify-center flex-shrink-0">
-             <i class="fas fa-user text-gray-300"></i>
-           </div>`;
+      const avatar =
+        type === "ai"
+          ? `<div class="w-8 h-8 rounded-full overflow-hidden flex-shrink-0">
+               <img src="axum-white.png" alt="Axum Logo"
+                    class="w-full h-full object-cover">
+             </div>`
+          : `<div class="w-8 h-8 rounded-full bg-gray-700
+                          flex items-center justify-center flex-shrink-0">
+               <i class="fas fa-user text-gray-300"></i>
+             </div>`;
 
       const msg = document.createElement("div");
       msg.className = "chat-message";
