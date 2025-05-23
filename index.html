@@ -11,8 +11,8 @@
   />
   <style>
     /* Scrollbar personalizado */
-    ::-webkit-scrollbar { width: 6px; }
-    ::-webkit-scrollbar-track { background: #1a1a1a; }
+    ::-webkit-scrollbar { width: 6px }
+    ::-webkit-scrollbar-track { background: #1a1a1a }
     ::-webkit-scrollbar-thumb {
       background: #8b5cf6;
       border-radius: 3px;
@@ -20,39 +20,41 @@
 
     /* Fade-in de mensajes */
     @keyframes fadeIn {
-      from { opacity: 0; transform: translateY(10px); }
-      to   { opacity: 1; transform: translateY(0); }
+      from { opacity: 0; transform: translateY(10px) }
+      to   { opacity: 1; transform: translateY(0) }
     }
-    .chat-message { animation: fadeIn 0.3s ease-out; }
+    .chat-message { animation: fadeIn 0.3s ease-out }
 
     /* Glow al enfocar */
     .input-glow:focus {
-      box-shadow: 0 0 0 2px rgba(139,92,246,0.5);
+      box-shadow: 0 0 0 2px rgba(139,92,246,0.5)
     }
 
     /* Pulso “pensando” */
     @keyframes pulse {
-      0%,100% { opacity: 1; }
-      50%     { opacity: 0.5; }
+      0%,100% { opacity: 1 }
+      50%     { opacity: 0.5 }
     }
-    .pulse { animation: pulse 1.5s infinite; }
+    .pulse { animation: pulse 1.5s infinite }
 
     /* Ancho máximo centrado */
-    .chat-container { max-width: 800px; margin: 0 auto; }
+    .chat-container { max-width: 800px; margin: 0 auto }
 
-    /* Transición suave de transform para input y logo */
-    #inputArea,
-    #logoArea {
+    /* Transiciones suaves */
+    #inputArea {
       transition: transform 0.6s cubic-bezier(0.22,1,0.36,1);
+    }
+    #logoArea {
+      transition: top 0.6s cubic-bezier(0.22,1,0.36,1);
     }
   </style>
 </head>
 <body class="bg-black text-gray-100 h-screen flex flex-col">
-  <!-- Logo animable -->
+  <!-- Logo animable: inicia en medio, arriba del input -->
   <header
     id="logoArea"
-    class="absolute left-0 right-0 top-1/2 transform translate-y-1/2
-           z-10 p-4 flex items-center justify-center chat-container"
+    class="absolute left-0 right-0 z-10 flex items-center justify-center chat-container p-4 bg-black"
+    style="top: calc(50% - 5rem);"
   >
     <img src="axum-label-white.png" alt="Axum Logo" class="h-8 w-auto rounded-full"/>
   </header>
@@ -107,62 +109,60 @@
   </main>
 
   <script>
-    const textarea          = document.getElementById("messageInput");
-    const chatForm          = document.getElementById("chatForm");
-    const chatContainer     = document.getElementById("chatContainer");
-    const thinkingIndicator = document.getElementById("thinkingIndicator");
-    const inputArea         = document.getElementById("inputArea");
-    const logoArea          = document.getElementById("logoArea");
-    let firstMessageSent    = false;
+    const textarea          = document.getElementById("messageInput")
+    const chatForm          = document.getElementById("chatForm")
+    const chatContainer     = document.getElementById("chatContainer")
+    const thinkingIndicator = document.getElementById("thinkingIndicator")
+    const inputArea         = document.getElementById("inputArea")
+    const logoArea          = document.getElementById("logoArea")
+    let firstMessageSent    = false
 
     // Auto-resize del textarea
     textarea.addEventListener("input", () => {
-      textarea.style.height = "auto";
-      textarea.style.height = textarea.scrollHeight + "px";
-    });
+      textarea.style.height = "auto"
+      textarea.style.height = textarea.scrollHeight + "px"
+    })
 
     chatForm.addEventListener("submit", function(e) {
-      e.preventDefault();
-      const message = textarea.value.trim();
-      if (!message) return;
+      e.preventDefault()
+      const message = textarea.value.trim()
+      if (!message) return
 
       if (!firstMessageSent) {
-        // Mover input hacia abajo
-        inputArea.classList.replace("top-1/2", "bottom-0");
+        // Anima el input hacia abajo
+        inputArea.classList.replace("top-1/2", "bottom-0")
         requestAnimationFrame(() => {
-          inputArea.classList.remove("-translate-y-1/2");
-        });
-        // Mover logo hacia arriba
-        logoArea.classList.replace("top-1/2", "top-0");
-        requestAnimationFrame(() => {
-          logoArea.classList.remove("translate-y-1/2");
-        });
+          inputArea.classList.remove("-translate-y-1/2")
+        })
 
-        firstMessageSent = true;
+        // Anima el logo hacia arriba
+        logoArea.style.top = "0"
+
+        firstMessageSent = true
       }
 
-      // Añadir mensaje del usuario
-      addMessage("You", message, "user");
-      textarea.value = "";
-      textarea.style.height = "auto";
+      // Añade el mensaje del usuario
+      addMessage("You", message, "user")
+      textarea.value = ""
+      textarea.style.height = "auto"
 
       // Mostrar “pensando” y scroll suave
-      thinkingIndicator.classList.remove("hidden");
-      chatContainer.scrollTo({ top: chatContainer.scrollHeight, behavior: "smooth" });
+      thinkingIndicator.classList.remove("hidden")
+      chatContainer.scrollTo({ top: chatContainer.scrollHeight, behavior: "smooth" })
 
       // Simulación de respuesta
       setTimeout(() => {
-        thinkingIndicator.classList.add("hidden");
+        thinkingIndicator.classList.add("hidden")
         const samples = [
-          "¡Claro! Aquí tienes la explicación...",
+          "¡Claro! Aquí está la explicación...",
           "Déjame darte más detalles.",
-          "¿Quieres ver un snippet de código?"
-        ];
-        const resp = samples[Math.floor(Math.random() * samples.length)];
-        addMessage("Axum", resp, "ai");
-        chatContainer.scrollTo({ top: chatContainer.scrollHeight, behavior: "smooth" });
-      }, 1500 + Math.random() * 2000);
-    });
+          "¿Quieres un snippet de código?"
+        ]
+        const resp = samples[Math.floor(Math.random() * samples.length)]
+        addMessage("Axum", resp, "ai")
+        chatContainer.scrollTo({ top: chatContainer.scrollHeight, behavior: "smooth" })
+      }, 1500 + Math.random() * 2000)
+    })
 
     function addMessage(sender, text, type) {
       const avatar = type === "ai"
@@ -171,10 +171,10 @@
            </div>`
         : `<div class="w-8 h-8 rounded-full bg-gray-700 flex items-center justify-center flex-shrink-0">
              <i class="fas fa-user text-gray-300"></i>
-           </div>`;
+           </div>`
 
-      const msg = document.createElement("div");
-      msg.className = "chat-message";
+      const msg = document.createElement("div")
+      msg.className = "chat-message"
       msg.innerHTML = `
         <div class="flex items-start space-x-4">
           ${avatar}
@@ -182,8 +182,8 @@
             <p class="font-bold">${sender}</p>
             <div class="mt-1 text-gray-300"><p>${text}</p></div>
           </div>
-        </div>`;
-      chatContainer.appendChild(msg);
+        </div>`
+      chatContainer.appendChild(msg)
     }
   </script>
 </body>
