@@ -10,31 +10,41 @@
     href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css"
   />
   <style>
-    /* Custom scrollbar */
+    /* Scrollbar personalizado */
     ::-webkit-scrollbar { width: 6px; }
     ::-webkit-scrollbar-track { background: #1a1a1a; }
     ::-webkit-scrollbar-thumb {
       background: #8b5cf6;
       border-radius: 3px;
     }
-    /* Chat bubble animation */
+
+    /* Animación burbujas */
     @keyframes fadeIn {
       from { opacity: 0; transform: translateY(10px); }
       to   { opacity: 1; transform: translateY(0); }
     }
     .chat-message { animation: fadeIn 0.3s ease-out; }
-    /* Input glow */
+
+    /* Brillo al enfocar */
     .input-glow:focus {
       box-shadow: 0 0 0 2px rgba(139,92,246,0.5);
     }
-    /* Pulse for thinking */
+
+    /* Pulso “pensando” */
     @keyframes pulse {
       0%,100% { opacity: 1; }
       50%     { opacity: 0.5; }
     }
     .pulse { animation: pulse 1.5s infinite; }
-    /* Container width */
+
+    /* Contenedor centrado */
     .chat-container { max-width: 800px; margin: 0 auto; }
+
+    /* Transiciones específicas para el inputArea */
+    #inputArea {
+      transition: top 0.5s cubic-bezier(0.22,1,0.36,1),
+                  bottom 0.5s cubic-bezier(0.22,1,0.36,1);
+    }
   </style>
 </head>
 <body class="bg-black text-gray-100 h-screen flex flex-col">
@@ -58,23 +68,17 @@
     >
       <div class="flex items-center justify-center space-x-2 text-purple-400">
         <div class="w-2 h-2 rounded-full bg-purple-500 pulse"></div>
-        <div
-          class="w-2 h-2 rounded-full bg-purple-500 pulse"
-          style="animation-delay:0.2s"
-        ></div>
-        <div
-          class="w-2 h-2 rounded-full bg-purple-500 pulse"
-          style="animation-delay:0.4s"
-        ></div>
+        <div class="w-2 h-2 rounded-full bg-purple-500 pulse" style="animation-delay:0.2s"></div>
+        <div class="w-2 h-2 rounded-full bg-purple-500 pulse" style="animation-delay:0.4s"></div>
         <span>Axum is thinking...</span>
       </div>
     </div>
 
-    <!-- Input (inicia centrado, luego se anima abajo) -->
+    <!-- Input (inicia centrado, luego baja con animación suavizada) -->
     <div
       id="inputArea"
       class="absolute left-0 right-0 top-1/2 transform -translate-y-1/2
-             transition-all duration-500 ease-in-out z-10 chat-container mx-auto
+             z-10 chat-container mx-auto
              border-t border-gray-800 p-4 bg-black"
     >
       <form id="chatForm" class="flex items-center space-x-2">
@@ -101,14 +105,12 @@
   </main>
 
   <script>
-    const textarea        = document.getElementById("messageInput");
-    const chatForm        = document.getElementById("chatForm");
-    const chatContainer   = document.getElementById("chatContainer");
+    const textarea          = document.getElementById("messageInput");
+    const chatForm          = document.getElementById("chatForm");
+    const chatContainer     = document.getElementById("chatContainer");
     const thinkingIndicator = document.getElementById("thinkingIndicator");
-    const inputArea       = document.getElementById("inputArea");
-
-    // Para saber cuándo mover el input hacia abajo
-    let firstMessageSent = false;
+    const inputArea         = document.getElementById("inputArea");
+    let firstMessageSent    = false;
 
     // Auto-resize del textarea
     textarea.addEventListener("input", function () {
@@ -128,28 +130,27 @@
         firstMessageSent = true;
       }
 
-      // Añadir mensaje del usuario
+      // Agregar mensaje usuario
       addMessage("You", message, "user");
       textarea.value = "";
       textarea.style.height = "auto";
 
-      // Mostrar indicador "pensando"
+      // Mostrar “pensando” y scroll suave
       thinkingIndicator.classList.remove("hidden");
-      chatContainer.scrollTop = chatContainer.scrollHeight;
+      chatContainer.scrollTo({ top: chatContainer.scrollHeight, behavior: "smooth" });
 
-      // Simular respuesta de Axum
+      // Respuesta simulada
       setTimeout(() => {
         thinkingIndicator.classList.add("hidden");
-        const responses = [
-          "¡Claro! Así funciona...",
+        const samples = [
+          "¡Claro! Aquí está la explicación...",
           "Déjame darte más detalles.",
-          "¿Quieres ver un snippet de código?"
+          "¿Quieres un snippet de código?"
         ];
-        const random = responses[Math.floor(Math.random() * responses.length)];
-        addMessage("Axum", random, "ai");
-        setTimeout(() => {
-          chatContainer.scrollTop = chatContainer.scrollHeight;
-        }, 100);
+        const resp = samples[Math.floor(Math.random() * samples.length)];
+        addMessage("Axum", resp, "ai");
+        // Scroll suave tras respuesta
+        chatContainer.scrollTo({ top: chatContainer.scrollHeight, behavior: "smooth" });
       }, 1500 + Math.random() * 2000);
     });
 
@@ -160,8 +161,7 @@
                <img src="axum-white.png" alt="Axum Logo"
                     class="w-full h-full object-cover">
              </div>`
-          : `<div class="w-8 h-8 rounded-full bg-gray-700
-                          flex items-center justify-center flex-shrink-0">
+          : `<div class="w-8 h-8 rounded-full bg-gray-700 flex items-center justify-center flex-shrink-0">
                <i class="fas fa-user text-gray-300"></i>
              </div>`;
 
@@ -174,8 +174,7 @@
             <p class="font-bold">${sender}</p>
             <div class="mt-1 text-gray-300"><p>${text}</p></div>
           </div>
-        </div>
-      `;
+        </div>`;
       chatContainer.appendChild(msg);
     }
   </script>
