@@ -122,6 +122,15 @@
       this.style.height = this.scrollHeight + "px";
     });
 
+    // Enviar al pulsar Enter (sin Shift)
+    textarea.addEventListener("keydown", function (e) {
+    if (e.key === "Enter" && !e.shiftKey) {
+        e.preventDefault();
+        // Dispara el submit de la forma
+        chatForm.dispatchEvent(new Event("submit", { bubbles: true, cancelable: true }));
+    }
+    });
+
     chatForm.addEventListener("submit", function (e) {
       e.preventDefault();
       const message = textarea.value.trim();
