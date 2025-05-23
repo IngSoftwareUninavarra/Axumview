@@ -58,7 +58,7 @@
         <header class="border-b border-gray-800 p-4 flex items-center justify-center">
             <div class="flex items-center space-x-2">
                 <div class="flex items-center space-x-2">
-                    <img src="axum-label-white.jpeg" alt="Axum Logo" class="w-8 h-8 rounded-full">
+                    <img src="axum-label-white.jpeg" alt="Axum Logo" class="h-12 w-auto rounded-full">
                     <!-- <h1 class="font-bold">Axum</h1> -->
                 </div>
                 <!-- <h1 class="font-bold">Axum</h1> -->
@@ -209,8 +209,8 @@
             const messageDiv = document.createElement('div');
             messageDiv.className = 'chat-message';
             
-            const icon = type === 'ai' 
-                ? '<i class="fas fa-robot text-white"></i>' 
+            const icon = type === 'ai'
+                ? '<img src="axum-white.png" alt="Axum Logo" class="w-10 h-10 rounded-full">'
                 : '<i class="fas fa-user text-gray-300"></i>';
             
             const bgColor = type === 'ai' ? 'bg-purple-600' : 'bg-gray-700';
