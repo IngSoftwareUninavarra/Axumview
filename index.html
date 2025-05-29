@@ -10,7 +10,6 @@
     href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css"
   />
   <style>
-    /* Scrollbar personalizado */
     ::-webkit-scrollbar { width: 6px; }
     ::-webkit-scrollbar-track { background: #1a1a1a; }
     ::-webkit-scrollbar-thumb {
@@ -18,54 +17,45 @@
       border-radius: 3px;
     }
 
-    /* Fade-in de mensajes */
     @keyframes fadeIn {
       from { opacity: 0; transform: translateY(10px); }
       to   { opacity: 1; transform: translateY(0); }
     }
     .chat-message { animation: fadeIn 0.3s ease-out; }
 
-    /* Glow al enfocar */
     .input-glow:focus {
       box-shadow: 0 0 0 2px rgba(139,92,246,0.5);
     }
 
-    /* Pulso “pensando” */
     @keyframes pulse {
       0%,100% { opacity: 1; }
       50%     { opacity: 0.5; }
     }
     .pulse { animation: pulse 1.5s infinite; }
 
-    /* Centrar ancho */
     .chat-container { max-width: 800px; margin: 0 auto; }
-
-    /* Transición solo de transform para un slide suave */
-    #inputArea {
-      transition: transform 0.6s cubic-bezier(0.22,1,0.36,1);
-    }
   </style>
 </head>
 <body class="bg-black text-gray-100 h-screen flex flex-col">
-  <!-- Header -->
-<header class="p-4 flex items-center justify-center">
-  <!-- Logo más grande: altura 16 (64px) con ancho automático -->
-  <img
-    src="axum-label-white.png"
-    alt="Axum Logo"
-    class="h-24 w-auto rounded-full"
-  />
-</header>
 
-  <!-- Main -->
-  <main class="flex-1 relative">
-    <!-- Mensajes -->
+  <!-- Header -->
+  <header class="p-4 flex items-center justify-center">
+    <img
+      src="axum-label-white.png"
+      alt="Axum Logo"
+      class="h-24 w-auto rounded-full"
+    />
+  </header>
+
+  <!-- Main layout -->
+  <main class="flex flex-col flex-1 overflow-hidden">
+    <!-- Chat messages scroll area -->
     <div
       id="chatContainer"
       class="flex-1 overflow-y-auto p-4 space-y-6 chat-container"
     ></div>
 
-    <!-- Indicador “pensando” -->
+    <!-- Thinking indicator -->
     <div
       id="thinkingIndicator"
       class="hidden px-4 py-2 bg-black chat-container mx-auto"
@@ -78,12 +68,10 @@
       </div>
     </div>
 
-    <!-- Input (inicia centrado, luego baja con animación suave de transform) -->
+    <!-- Input area fixed at the bottom -->
     <div
       id="inputArea"
-      class="absolute left-0 right-0 top-1/2 transform -translate-y-1/2
-             z-10 chat-container mx-auto
-              p-4 bg-black"
+      class="chat-container p-4 bg-black border-t border-gray-700"
     >
       <form id="chatForm" class="flex items-center space-x-2">
         <div class="flex-1 relative">
@@ -108,27 +96,25 @@
     </div>
   </main>
 
+  <!-- Script -->
   <script>
     const textarea          = document.getElementById("messageInput");
     const chatForm          = document.getElementById("chatForm");
     const chatContainer     = document.getElementById("chatContainer");
     const thinkingIndicator = document.getElementById("thinkingIndicator");
-    const inputArea         = document.getElementById("inputArea");
-    let firstMessageSent    = false;
 
-    // Auto-resize del textarea
+    // Auto-resize textarea
     textarea.addEventListener("input", function () {
       this.style.height = "auto";
       this.style.height = this.scrollHeight + "px";
     });
 
-    // Enviar al pulsar Enter (sin Shift)
+    // Submit on Enter (no Shift)
     textarea.addEventListener("keydown", function (e) {
-    if (e.key === "Enter" && !e.shiftKey) {
+      if (e.key === "Enter" && !e.shiftKey) {
         e.preventDefault();
-        // Dispara el submit de la forma
         chatForm.dispatchEvent(new Event("submit", { bubbles: true, cancelable: true }));
-    }
+      }
     });
 
     chatForm.addEventListener("submit", function (e) {
@@ -136,27 +122,13 @@
       const message = textarea.value.trim();
       if (!message) return;
 
-      // Al primer mensaje, posicionamos abajo y animamos solo transform
-      if (!firstMessageSent) {
-        // Reemplazamos la clase top-1/2 por bottom-0
-        inputArea.classList.replace("top-1/2", "bottom-0");
-        // Esperamos al próximo frame para quitar la traslación y disparar la animación
-        requestAnimationFrame(() => {
-          inputArea.classList.remove("-translate-y-1/2");
-        });
-        firstMessageSent = true;
-      }
-
-      // Añadimos mensaje de usuario
       addMessage("You", message, "user");
       textarea.value = "";
       textarea.style.height = "auto";
 
-      // Mostrar “pensando” y scroll suave
       thinkingIndicator.classList.remove("hidden");
       chatContainer.scrollTo({ top: chatContainer.scrollHeight, behavior: "smooth" });
 
-      // Simulamos respuesta de Axum
       setTimeout(() => {
         thinkingIndicator.classList.add("hidden");
         const samples = [
@@ -193,13 +165,10 @@
           </div>
         </div>`;
       chatContainer.appendChild(msg);
-    // Si el contenido supera la altura del contenedor, desplazamos al final:
-    if (chatContainer.scrollHeight > chatContainer.clientHeight) {
-        chatContainer.scrollTo({
+      chatContainer.scrollTo({
         top: chatContainer.scrollHeight,
         behavior: "smooth"
-        });
-    }
+      });
     }
   </script>
 </body>
