@@ -44,9 +44,9 @@
   <!-- Logo -->
   <div
     id="logoWrapper"
-    class="absolute top-[30%] left-0 right-0 transform -translate-y-1/2 z-40 flex justify-center h-32 pointer-events-none transition-all duration-700 ease-in-out"
+    class="absolute top-1/2 left-0 right-0 transform -translate-y-1/2 z-40 flex justify-center pointer-events-none transition-all duration-700 ease-in-out"
   >
-    <img src="axum-label-white.png" alt="Axum Logo" class="h-24 w-auto rounded-full" />
+    <img src="axum-label-white.png" alt="Axum Logo" class="h-24 w-auto rounded-full mt-[-7rem]" />
   </div>
 
   <!-- Área principal -->
@@ -126,14 +126,14 @@
       if (!message) return;
 
       if (!firstMessageSent) {
-        // Input baja
+        // Mover input hacia abajo
         inputArea.classList.replace("top-1/2", "bottom-0");
         requestAnimationFrame(() => {
           inputArea.classList.remove("-translate-y-1/2");
         });
 
-        // Logo sube
-        logoWrapper.classList.replace("top-[30%]", "top-0");
+        // Mover logo hacia arriba
+        logoWrapper.classList.replace("top-1/2", "top-0");
         requestAnimationFrame(() => {
           logoWrapper.classList.remove("-translate-y-1/2");
         });
