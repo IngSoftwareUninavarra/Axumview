@@ -5,10 +5,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
   <title>Axum AI</title>
   <script src="https://cdn.tailwindcss.com"></script>
-  <link
-    rel="stylesheet"
-    href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css"
-  />
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" />
   <style>
     ::-webkit-scrollbar { width: 6px; }
     ::-webkit-scrollbar-track { background: #1a1a1a; }
@@ -35,18 +32,20 @@
 
     .chat-container { max-width: 800px; margin: 0 auto; }
 
-    /* Animación suave solo para transform */
-    #inputArea {
-      transition: transform 0.6s cubic-bezier(0.22,1,0.36,1);
+    #inputArea, #logoWrapper {
+      transition: transform 0.6s cubic-bezier(0.22,1,0.36,1), top 0.6s cubic-bezier(0.22,1,0.36,1);
     }
   </style>
 </head>
 <body class="bg-black text-gray-100 h-screen flex flex-col">
 
-  <!-- Header -->
-  <header class="p-4 flex items-center justify-center">
+  <!-- Logo centrado que sube -->
+  <div
+    id="logoWrapper"
+    class="absolute top-1/2 left-0 right-0 transform -translate-y-full z-20 flex justify-center"
+  >
     <img src="axum-label-white.png" alt="Axum Logo" class="h-24 w-auto rounded-full" />
-  </header>
+  </div>
 
   <!-- Main layout -->
   <main class="relative flex-1 overflow-hidden h-full">
@@ -104,6 +103,7 @@
     const chatContainer     = document.getElementById("chatContainer");
     const thinkingIndicator = document.getElementById("thinkingIndicator");
     const inputArea         = document.getElementById("inputArea");
+    const logoWrapper       = document.getElementById("logoWrapper");
     let firstMessageSent    = false;
 
     textarea.addEventListener("input", function () {
@@ -123,12 +123,14 @@
       const message = textarea.value.trim();
       if (!message) return;
 
-      // Mover el input solo al primer mensaje
+      // Solo al primer mensaje
       if (!firstMessageSent) {
         inputArea.classList.replace("top-1/2", "bottom-0");
-        requestAnimationFrame(() => {
-          inputArea.classList.remove("-translate-y-1/2");
-        });
+        requestAnimationFrame(() => inputArea.classList.remove("-translate-y-1/2"));
+
+        logoWrapper.classList.replace("top-1/2", "top-0");
+        requestAnimationFrame(() => logoWrapper.classList.remove("-translate-y-full"));
+
         firstMessageSent = true;
       }
 
