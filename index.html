@@ -39,16 +39,16 @@
 </head>
 <body class="bg-black text-gray-100 h-screen flex flex-col">
 
-  <!-- Logo que sube -->
+  <!-- Logo fijo separado del chat -->
   <div
     id="logoWrapper"
-    class="absolute top-1/2 left-0 right-0 transform -translate-y-[130%] z-20 flex justify-center"
+    class="fixed top-1/2 left-0 right-0 transform -translate-y-[130%] z-50 flex justify-center pointer-events-none"
   >
     <img src="axum-label-white.png" alt="Axum Logo" class="h-24 w-auto rounded-full" />
   </div>
 
   <!-- Main layout -->
-  <main class="relative flex-1 overflow-hidden h-full">
+  <main class="relative flex-1 overflow-hidden h-full pt-32">
     <!-- Mensajes -->
     <div
       id="chatContainer"
@@ -68,7 +68,7 @@
       </div>
     </div>
 
-    <!-- Input que baja -->
+    <!-- Input -->
     <div
       id="inputArea"
       class="absolute top-1/2 left-0 right-0 transform -translate-y-1/2 chat-container mx-auto p-4 bg-black border-t border-gray-700 z-10"
@@ -135,9 +135,10 @@
           logoWrapper.classList.remove("-translate-y-[130%]");
         });
 
-        // Bajar z-index del logo después de la animación
+        // Fijar logo arriba sin mezclarlo
         setTimeout(() => {
-          logoWrapper.style.zIndex = "0";
+          logoWrapper.classList.remove("z-50");
+          logoWrapper.classList.add("z-10", "top-4", "transform-none");
         }, 650);
 
         firstMessageSent = true;
