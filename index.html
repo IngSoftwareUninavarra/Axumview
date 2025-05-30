@@ -50,10 +50,10 @@
   </div>
 
   <!-- Área principal -->
-  <main class="relative flex flex-col flex-1 overflow-hidden pt-36">
+  <main class="relative flex-1 overflow-hidden">
     <div
       id="chatContainer"
-      class="flex-1 overflow-y-auto p-4 pb-40 space-y-6 chat-container"
+      class="absolute top-0 left-0 right-0 bottom-28 overflow-y-auto p-4 pt-36 space-y-6 chat-container"
     ></div>
 
     <!-- Pensando -->
@@ -73,7 +73,7 @@
   <!-- Input -->
   <div
     id="inputArea"
-    class="fixed bottom-0 left-0 right-0 z-30 p-4 bg-black border-t border-gray-700 chat-container"
+    class="absolute top-1/2 left-0 right-0 transform -translate-y-1/2 z-30 p-4 bg-black border-t border-gray-700 chat-container"
   >
     <form id="chatForm" class="flex items-center space-x-2">
       <div class="flex-1 relative">
