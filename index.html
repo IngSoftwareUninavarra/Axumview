@@ -41,7 +41,7 @@
 
     @keyframes slideDownInput {
       from { top: 50%; transform: translateY(-50%); }
-      to   { bottom: 0; top: auto; transform: translateY(0); }
+      to   { top: calc(100% - 7rem); transform: translateY(0); }
     }
 
     .animate-logo-up {
@@ -63,17 +63,16 @@
     <img src="axum-label-white.png" alt="Axum Logo" class="h-24 w-auto rounded-full" />
   </div>
 
-  <!-- Chat -->
+  <!-- Área principal -->
   <main class="relative flex-1 overflow-hidden">
     <div
       id="chatContainer"
       class="absolute top-36 left-0 right-0 bottom-28 overflow-y-auto p-4 space-y-6 chat-container"
     ></div>
 
-    <!-- Pensando -->
     <div
       id="thinkingIndicator"
-      class="hidden px-4 py-2 bg-black chat-container mx-auto absolute bottom-[4.5rem] left-0 right-0 z-20"
+      class="hidden px-4 py-2 bg-black chat-container mx-auto absolute bottom-24 left-0 right-0"
     >
       <div class="flex items-center justify-center space-x-2 text-purple-400">
         <div class="w-2 h-2 rounded-full bg-purple-500 pulse"></div>
@@ -140,9 +139,6 @@
       if (!firstMessageSent) {
         inputArea.classList.add("animate-input-down");
         inputArea.classList.remove("-translate-y-1/2");
-        inputArea.classList.add("bottom-0");
-        inputArea.classList.remove("top-1/2");
-
         logoWrapper.classList.add("animate-logo-up");
         logoWrapper.classList.remove("-translate-y-1/2");
         firstMessageSent = true;
